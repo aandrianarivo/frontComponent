@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte Interactive - Antananarivo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      width: 100%;
+      height: 500px;
+    }
+    canvas {
+      display: block;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialisation de la carte centrée sur Antananarivo
+    const map = L.map('map').setView([-18.9120922, 47.5216627], 12); // Zoom initial sur Antananarivo
+
+    // Ajout d'un fond de carte
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    // Définition de roundRect si non disponible
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+        this.beginPath();
+        this.moveTo(x + radius, y);
+        this.lineTo(x + width - radius, y);
+        this.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.lineTo(x + width, y + height - radius);
+        this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.lineTo(x + radius, y + height);
+        this.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.lineTo(x, y + radius);
+        this.quadraticCurveTo(x, y, x + radius, y);
+        this.closePath();
+      };
+    }
+
+    // Fonction pour dessiner le marqueur avec un badge et le texte indiquant le nombre d'étoiles
+    function drawStarMarker(canvas, imageSrc, starCount, scale = 1) {
+      return new Promise((resolve) => {
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.scale(scale, scale);
+
+        // Configuration du rectangle arrondi (corps du marqueur)
+        const rectWidth = 26;
+        const rectHeight = 24;
+        const cornerRadius = 4;
+
+        // Dessin du rectangle arrondi
+        ctx.beginPath();
+        ctx.roundRect(
+          -rectWidth / 2,
+          -rectHeight / 2,
+          rectWidth,
+          rectHeight,
+          cornerRadius
+        );
+        ctx.closePath();
+
+        // Couleur du rectangle
+        ctx.fillStyle = '#FF6347';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#FF6347';
+        ctx.stroke();
+
+        // Partie inférieure : flèche pointant vers le bas
+        ctx.beginPath();
+        ctx.moveTo(-6, 12);
+        ctx.lineTo(0, 22);
+        ctx.lineTo(6, 12);
+        ctx.closePath();
+        ctx.fillStyle = '#FF6347';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#FF6347';
+        ctx.stroke();
+
+        // Cercle blanc au centre
+        ctx.beginPath();
+        ctx.arc(0, 0, 12 - 0.5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        // Badge noir clair au-dessus du marqueur
+        const badgeWidth = 24;
+        const badgeHeight = 14;
+        ctx.beginPath();
+        ctx.roundRect(
+          -badgeWidth / 2,
+          -rectHeight / 2 - badgeHeight - 2, // Positionné juste au-dessus du rectangle
+          badgeWidth,
+          badgeHeight,
+          2 // Coins légèrement arrondis
+        );
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; // Noir clair (semi-transparent)
+        ctx.fill();
+
+        // Ajouter le texte dans le badge
+        ctx.font = 'bold 14px Arial'; // Taille augmentée
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Dessiner le nombre "3" en blanc
+        ctx.fillStyle = 'white';
+        ctx.fillText(`${starCount}`, -4, -rectHeight / 2 - badgeHeight / 2 - 2); // Centré dans le badge
+
+        // Dessiner l'étoile "★" en jaune
+        ctx.fillStyle = 'yellow';
+        ctx.fillText('★', 6, -rectHeight / 2 - badgeHeight / 2 - 2); // À droite du nombre
+
+        ctx.restore();
+
+        // Ajouter une image dans le cercle blanc
+        const image = new Image();
+        image.src = imageSrc;
+
+        image.onload = () => {
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.scale(scale, scale);
+          ctx.beginPath();
+          ctx.arc(0, 0, 13 - 2, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
+
+          ctx.drawImage(
+            image,
+            0, 0, image.width, image.height,
+            -10, -10, 20, 20
+          );
+          ctx.restore();
+          resolve();
+        };
+
+        image.onerror = () => {
+          console.error("Erreur lors du chargement de l'image :", imageSrc);
+          resolve(); // Résoudre même en cas d'erreur pour éviter un blocage
+        };
+      });
+    }
+
+    // Fonction pour créer un marqueur personnalisé avec un nombre d'étoiles
+    function createCustomMarker(lat, lng, imageSrc, starCount) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 52; // Largeur du marqueur
+      canvas.height = 62; // Hauteur augmentée pour inclure le badge au-dessus
+
+      drawStarMarker(canvas, imageSrc, starCount).then(() => {
+        const dataUrl = canvas.toDataURL();
+        const icon = L.icon({
+          iconUrl: dataUrl,
+          iconSize: [52, 62], // Taille ajustée
+          iconAnchor: [26, 58], // Ajusté pour aligner la base de la flèche
+        });
+        const marker = L.marker([lat, lng], { icon }).addTo(map);
+      });
+    }
+
+    // Ajouter un marqueur avec "3★" dans un badge à Antananarivo
+    createCustomMarker(-18.9120922, 47.5216627, 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Star_Icon_001.svg/1200px-Star_Icon_001.svg.png', 3);
+  </script>
+</body>
+</html>

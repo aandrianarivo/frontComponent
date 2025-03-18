@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Prompt</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Embed Spline design -->
+  <iframe id="canvas" src="https://my.spline.design/yourdesignurl" frameborder="0"></iframe>
+
+  <script>
+    // Synchronize mouse position with 3D movement
+    const iframe = document.getElementById('canvas');
+    iframe.addEventListener('load', () => {
+      const iframeWindow = iframe.contentWindow;
+      document.addEventListener('mousemove', (event) => {
+        const mouseX = event.clientX / window.innerWidth;
+        const mouseY = event.clientY / window.innerHeight;
+        iframeWindow.postMessage({ type: 'mouseMove', mouseX, mouseY }, '*');
+      });
+    });
+  </script>
+</body>
+</html>

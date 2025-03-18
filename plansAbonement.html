@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système d'Abonnement avec Stripe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .plan {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .plan h2 {
+            margin-top: 0;
+        }
+        button {
+            background-color: #6772e5;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #5469d4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Choisissez votre plan d'abonnement</h1>
+
+    <!-- Plan Gratuit -->
+    <div class="plan">
+        <h2>Plan Gratuit</h2>
+        <p>Accès limité aux fonctionnalités</p>
+        <p>Prix: 0€ / mois</p>
+        <button onclick="alert('Plan gratuit sélectionné ! Aucune configuration de paiement nécessaire.')">
+            Choisir le plan gratuit
+        </button>
+    </div>
+
+    <!-- Plan Payant -->
+    <div class="plan">
+        <h2>Plan Premium</h2>
+        <p>Accès complet à toutes les fonctionnalités</p>
+        <p>Prix: 5€ / mois</p>
+        <button id="checkout-button">Choisir le plan Premium</button>
+    </div>
+
+    <!-- Intégration de Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Remplacez par votre clé publique Stripe
+        const stripe = Stripe('pk_test_VOTRE_CLÉ_PUBLIQUE_STRIPE');
+
+        // Gestion du bouton de paiement
+        document.getElementById('checkout-button').addEventListener('click', function() {
+            stripe.redirectToCheckout({
+                lineItems: [{
+                    // Remplacez par l'ID de votre prix créé dans Stripe Dashboard
+                    price: 'price_VOTRE_PRICE_ID', 
+                    quantity: 1,
+                }],
+                mode: 'subscription',
+                successUrl: 'https://votre-site.com/success',
+                cancelUrl: 'https://votre-site.com/cancel',
+            })
+            .then(function(result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
