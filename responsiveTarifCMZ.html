@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview Tarification Responsive</title>
+
+  <!-- Font Awesome pour les icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    /* Container */
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .sec-title h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    /* Toggle desktop */
+    .pricing-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .toggle-btn {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      color: #000;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    .toggle-btn.active {
+      background: #ffc20b;
+      color: #fff;
+    }
+    .savings-badge {
+      background: #28a745;
+      color: #fff;
+      font-size: .75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 5px;
+    }
+
+    /* Select mobile */
+    .mobile-plan-select {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto 1.5rem;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+    }
+
+    /* Grille des cartes */
+    .outer-box .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .pricing-block {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+    }
+    .inner-box {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    /* Icône / logo */
+    .icon-box .icon-outer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+    .icon-outer i {
+      font-size: 48px;
+      color: #28a745;
+    }
+
+    /* Titres et prix */
+    .price-box .title {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-bottom: .5rem;
+    }
+    .price-box .price {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .price-box .price-period {
+      display: block;
+      text-align: center;
+      color: #6c757d;
+    }
+    .price-yearly .savings {
+      color: #28a745;
+      font-size: .9rem;
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    /* Liste de fonctionnalités */
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      flex: 1;
+    }
+    .features li {
+      display: flex;
+      align-items: center;
+      margin-bottom: .5rem;
+    }
+    .features li:before {
+      content: "\f00c";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      margin-right: .5rem;
+      color: #28a745;
+    }
+
+    /* Bouton CTA */
+    .btn-box {
+      text-align: center;
+      margin-top: auto;
+    }
+    .btn-box a {
+      display: inline-block;
+      background: #28a745;
+      color: #fff;
+      padding: .75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background .3s;
+    }
+    .btn-box a:hover {
+      background: #218838;
+    }
+
+    /* ==== Responsive ==== */
+    @media (max-width: 576px) {
+      /* toggle desktop → hidden */
+      .pricing-toggle { display: none; }
+      /* show native select */
+      .mobile-plan-select { display: block; }
+
+      /* cartes → colonne */
+      .outer-box .row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .pricing-block {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 768px) {
+      /* toggle stacking */
+      .pricing-toggle {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .toggle-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="pricing-section">
+    <div class="container">
+      <div class="sec-title">
+        <h2>Choisissez un plan</h2>
+      </div>
+
+      <!-- Toggle desktop -->
+      <div class="pricing-toggle">
+        <button class="toggle-btn active" data-plan="monthly">Mensuel</button>
+        <button class="toggle-btn" data-plan="yearly">
+          Annuel <span class="savings-badge">-16%</span>
+        </button>
+      </div>
+
+      <!-- Select mobile -->
+      <select class="mobile-plan-select" aria-label="Choix du plan">
+        <option value="monthly" selected>Mensuel</option>
+        <option value="yearly">Annuel –16 %</option>
+      </select>
+
+      <!-- Cartes -->
+      <div class="outer-box">
+        <div class="row">
+          <!-- Plan Gratuit -->
+          <div class="pricing-block">
+            <div class="inner-box">
+              <div class="icon-box">
+                <div class="icon-outer">
+                  <i class="fas fa-gem"></i>
+                </div>
+              </div>
+              <div class="price-box">
+                <div class="title">Essai</div>
+                <div class="price">0 €</div>
+              </div>
+              <ul class="features">
+                <li>Plongez dans un contenu soigneusement sélectionné pour vous</li>
+                <li>Restez informé avec des mises à jour clés</li>
+                <li>Profitez d'une sécurité adaptée à vos besoins</li>
+                <li>Connectez-vous facilement à vos outils favoris</li>
+              </ul>
+              <div class="btn-box">
+                <a href="#start-free">Commencer</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Payant -->
+          <div class="pricing-block">
+            <div class="inner-box">
+              <div class="icon-box">
+                <div class="icon-outer">
+                  <i class="fas fa-gem"></i>
+                </div>
+              </div>
+              <div class="price-box">
+                <div class="title">Plan payant</div>
+                <div class="price-monthly active">
+                  <div class="price">5,00 €</div>
+                  <span class="price-period">par mois</span>
+                </div>
+                <div class="price-yearly">
+                  <div class="price">50,00 €</div>
+                  <span class="price-period">par an</span>
+                  <div class="savings">Économisez 10 € (soit 4,17 €/mois)</div>
+                </div>
+              </div>
+              <ul class="features">
+                <li>Accédez à un contenu de qualité et des outils exclusifs</li>
+                <li>Mises à jour régulières</li>
+                <li>Protection renforcée des données pour les abonnés</li>
+                <li>Intégrations étendues avec des outils tiers</li>
+              </ul>
+              <div class="btn-box">
+                <a href="#subscribe-monthly" class="subscribe-btn" data-plan="monthly">S'abonner</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtns  = document.querySelectorAll('.toggle-btn');
+      const select      = document.querySelector('.mobile-plan-select');
+      const monthly     = document.querySelector('.price-monthly');
+      const yearly      = document.querySelector('.price-yearly');
+      const subscribe   = document.querySelector('.subscribe-btn');
+
+      function setPlan(plan) {
+        // Boutons
+        toggleBtns.forEach(b => 
+          b.classList.toggle('active', b.dataset.plan === plan)
+        );
+        // Select mobile
+        if (select) select.value = plan;
+
+        // Affichage prix
+        if (plan === 'monthly') {
+          monthly.classList.add('active');
+          yearly.classList.remove('active');
+          subscribe.href = '#subscribe-monthly';
+        } else {
+          monthly.classList.remove('active');
+          yearly.classList.add('active');
+          subscribe.href = '#subscribe-yearly';
+        }
+      }
+
+      toggleBtns.forEach(btn =>
+        btn.addEventListener('click', () => setPlan(btn.dataset.plan))
+      );
+
+      if (select) {
+        select.addEventListener('change', () => setPlan(select.value));
+      }
+    });
+  </script>
+</body>
+</html>

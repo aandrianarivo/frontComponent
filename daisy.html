@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html data-theme="dracula"  lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="daisy.css">
+</head>
+<body>
+  <header class="px-60  mt-5 w-full ">
+    <div class=" w-full flex items-center justify-center gap-5 p-2">
+      <div class="avatar">
+        <div class="ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2">
+          <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+        </div>
+      </div>
+      <div>
+        <h1 class="text-xl font-semibold">
+          John  <div class="badge badge-success badge-dash">Doe</div>
+        </h1>
+      </div>
+    </div>
+  </header>
+  <main class="px-80 mt-5 w-full">
+    <figure class="diff aspect-35/9" tabindex="0">
+      <div class="diff-item-1" role="img" tabindex="0">
+        <div class="bg-primary text-primary-content grid place-content-center text-9xl font-black">
+          John 
+        </div>
+      </div>
+      <div class="diff-item-2" role="img">
+        <div class="bg-base-200 grid place-content-center text-9xl font-black">Doe</div>
+      </div>
+      <div class="diff-resizer"></div>
+    </figure>
+    <div class="collapse collapse-arrow bg-base-100 border border-base-300">
+      <input type="radio" name="my-accordion-2" checked="checked" />
+      <div class="collapse-title font-semibold">How do I create an account?</div>
+      <div class="collapse-content text-sm">Click the "Sign Up" button in the top right corner and follow the registration process.</div>
+    </div>
+    <div class="collapse collapse-arrow bg-base-100 border border-base-300">
+      <input type="radio" name="my-accordion-2" />
+      <div class="collapse-title font-semibold">I forgot my password. What should I do?</div>
+      <div class="collapse-content text-sm">Click on "Forgot Password" on the login page and follow the instructions sent to your email.</div>
+    </div>
+    <div class="collapse collapse-arrow bg-base-100 border border-base-300">
+      <input type="radio" name="my-accordion-2" />
+      <div class="collapse-title font-semibold">How do I update my profile information?</div>
+      <div class="collapse-content text-sm">Go to "My Account" settings and select "Edit Profile" to make changes.</div>
+    </div>
+    <button class="btn btn-success">
+      Button
+      <span class="loading loading-infinity loading-lg"></span>
+    </button>
+    <div>
+      <div class="skeleton h-32 w-32"></div>
+      <div class="flex w-52 flex-col gap-4">
+        <div class="flex items-center gap-4">
+          <div class="skeleton h-16 w-16 shrink-0 rounded-full"></div>
+          <div class="flex flex-col gap-4">
+            <div class="skeleton h-4 w-20"></div>
+            <div class="skeleton h-4 w-28"></div>
+          </div>
+        </div>
+        <div class="skeleton h-32 w-full"></div>
+      </div>
+    </div>
+    <div class="flex w-full items-center justify-center gap-4">
+      <div class="card bg-base-100 w-96 shadow-sm">
+        <figure>
+          <img
+            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+            alt="Shoes" />
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Card Title</h2>
+          <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary">Buy Now</button>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-base-100 w-96 shadow-sm">
+        <figure>
+          <div class="skeleton h-32 w-32"></div>
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Card Title</h2>
+          <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
