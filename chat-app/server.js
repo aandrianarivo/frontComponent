@@ -13,44 +13,52 @@ const DATA_FILE = path.join(__dirname, 'messages.json');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// Lecture/écriture du fichier JSON
 function readMessages() {
-  try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')); }
+  catch { return []; }
 }
-
 function writeMessages(msgs) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(msgs, null, 2));
 }
 
-// REST endpoint: charger un batch depuis la fin
+// Endpoint REST pour paginer
 app.get('/messages', (req, res) => {
   const offset = parseInt(req.query.offset) || 0;
-  const limit = parseInt(req.query.limit) || 3;
+  const limit = parseInt(req.query.limit) || 20;
   const all = readMessages();
+  // Trier par id croissant
+  all.sort((a,b) => a.id - b.id);
   const start = Math.max(all.length - offset - limit, 0);
   const end = all.length - offset;
-  const batch = all.slice(start, end);
-  res.json({ messages: batch });
+  res.json({ messages: all.slice(start, end) });
 });
 
-// Socket.io: diffusion des nouveaux messages
+// Socket.io pour le chat en temps réel
 io.on('connection', (socket) => {
-  socket.on('newMessage', (msg) => {
-    const all = readMessages();
-    const fullMsg = {
+  socket.on('register', (user) => {
+    socket.user = user;
+    socket.join('global');
+    io.to('global').emit('onlineUsers', Array.from(io.sockets.adapter.rooms.get('global') || []));
+  });
+
+  socket.on('newMessage', (text) => {
+    const msg = {
       id: Date.now(),
-      user: msg.user,
-      text: msg.text,
+      user: socket.user,
+      text,
       timestamp: new Date().toISOString(),
     };
-    all.push(fullMsg);
+    const all = readMessages();
+    all.push(msg);
     writeMessages(all);
-    io.emit('message', fullMsg);
+    io.to('global').emit('message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    io.to('global').emit('onlineUsers', Array.from(io.sockets.adapter.rooms.get('global') || []));
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5600;
 server.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

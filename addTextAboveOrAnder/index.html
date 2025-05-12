@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajouter du texte en haut / en bas</title>
+  <!-- Bootstrap 5 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    #myDiv {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      min-height: 100px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <div id="myDiv">
+    <p>Contenu initial</p>
+  </div>
+
+  <button id="btnAddTop" class="btn btn-primary me-2">
+    Ajouter du texte en haut
+  </button>
+  <button id="btnAddBottom" class="btn btn-success">
+    Ajouter du texte en bas
+  </button>
+
+  <!-- Bootstrap Bundle JS (optionnel pour d'autres composants) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const container = document.getElementById('myDiv');
+    const btnTop   = document.getElementById('btnAddTop');
+    const btnBot   = document.getElementById('btnAddBottom');
+
+    btnTop.addEventListener('click', () => {
+      const p = document.createElement('p');
+      p.textContent = '✏️ Texte ajouté en haut';
+      // insert avant le premier enfant
+      container.prepend(p);
+    });
+
+    btnBot.addEventListener('click', () => {
+      const p = document.createElement('p');
+      p.textContent = '🖋️ Texte ajouté en bas';
+      // insert après le dernier enfant
+      container.append(p);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discussion Messages avec Pagination Progressive</title>
+  <style>
+    body { background: #343a40; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
+    .container { max-width: 400px; margin: 2rem auto; }
+    .content_discussion_jheo_js {
+      max-height: 400px;
+      overflow-y: auto;
+      background: #2f3136;
+      padding: 1rem;
+      border-radius: .5rem;
+      box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+    .message { margin: .5rem 0; padding: .5rem; background: #40444b; border-radius: 4px; }
+    .message small { display: block; color: #b9bbbe; font-size: 0.75rem; margin-top: .25rem; }
+    .date-separator { text-align: center; margin: 1rem 0; color: #72767d; font-size: .85rem; }
+    .spinner { margin: .5rem auto; width: 24px; height: 24px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="content" class="content_discussion_jheo_js"></div>
+  </div>
+
+  <script>
+    // Données factices
+    const TOTAL = 100;
+    const PAGE_SIZE = 15;
+    const data = Array.from({length: TOTAL}, (_, i) => ({
+      id: TOTAL - i,
+      text: `Message #${TOTAL - i}`,
+      datetime: new Date(Date.now() - (TOTAL - i)*60000).toISOString().slice(0,19).replace('T',' '),
+      dateLabel: new Date(Date.now() - (TOTAL - i)*60000)
+                  .toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
+    }));
+
+    const container = document.getElementById('content');
+    let pointer = 0;      // index of next batch
+    let buffer = [];      // buffered messages for incremental display
+    let currentDate = null;
+    let fetching = false;
+
+    function createMessage(item) {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.id = `msg_${item.id}`;
+      div.innerHTML = `<div>${item.text}</div><small>${item.datetime}</small>`;
+      return div;
+    }
+    // Animation CSS fade-in et scroll
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .fade-in {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.4s cubic-bezier(.23,1.13,.72,1.01), transform 0.4s cubic-bezier(.23,1.13,.72,1.01);
+      }
+      .fade-in:not(.fade-in) {
+        opacity: 1;
+        transform: none;
+      }
+      .scroll-animate {
+        opacity: 0;
+        transform: translateY(32px) scale(0.97);
+        transition: opacity 0.5s cubic-bezier(.23,1.13,.72,1.01), transform 0.5s cubic-bezier(.23,1.13,.72,1.01);
+      }
+      .scroll-animate:not(.scroll-animate) {
+        opacity: 1;
+        transform: none;
+      }
+    `;
+    document.head.appendChild(style);
+    function createDateSep(label) {
+      const sep = document.createElement('div');
+      sep.className = 'date-separator';
+      sep.textContent = label;
+      return sep;
+    }
+
+    function insertAtBottom(item) {
+      if (item.dateLabel !== currentDate) {
+        container.appendChild(createDateSep(item.dateLabel));
+        currentDate = item.dateLabel;
+      }
+      container.appendChild(createMessage(item));
+    }
+    function insertAtTopBatch(items) {
+      // Mémorise l'offset du premier message visible
+      const firstVisible = container.firstElementChild;
+      const prevOffset = firstVisible ? firstVisible.getBoundingClientRect().top : 0;
+      const fragment = document.createDocumentFragment();
+      const elementsToAnimate = [];
+      items.forEach((item, idx) => {
+        let delay = idx * 60; // ms, pour cascade
+        if (item.dateLabel !== currentDate) {
+          const sep = createDateSep(item.dateLabel);
+          sep.classList.add('scroll-animate');
+          sep.style.transitionDelay = delay + 'ms';
+          fragment.insertBefore(sep, fragment.firstChild);
+          elementsToAnimate.push(sep);
+          currentDate = item.dateLabel;
+        }
+        const msg = createMessage(item);
+        msg.classList.add('scroll-animate');
+        msg.style.transitionDelay = delay + 'ms';
+        fragment.insertBefore(msg, fragment.firstChild);
+        elementsToAnimate.push(msg);
+      });
+      container.insertBefore(fragment, container.firstChild);
+      // Animation scroll (fade-in/slide + cascade)
+      setTimeout(() => {
+        elementsToAnimate.forEach(el => {
+          el.classList.remove('scroll-animate');
+          el.style.transitionDelay = '';
+        });
+      }, 600);
+      // Corrige la position du scroll pour garder le message visible
+      if (firstVisible) {
+        const newOffset = firstVisible.getBoundingClientRect().top;
+        container.scrollTop += (newOffset - prevOffset);
+      }
+    }
+    function showSpinner() {
+      const spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      spinner.id = 'spinner';
+      container.insertBefore(spinner, container.firstChild);
+    }
+    function hideSpinner() {
+      const spinner = document.getElementById('spinner');
+      if (spinner) spinner.remove();
+    }
+
+    // Fetch next batch into buffer
+    async function fetchNextBatch() {
+      if (fetching || pointer >= data.length) return;
+      fetching = true;
+      showSpinner();
+      // simulate network delay
+      await new Promise(r => setTimeout(r, 500));
+      let batch = data.slice(pointer, pointer + PAGE_SIZE);
+      pointer += batch.length;
+      // Trie le batch en décroissant (id le plus grand en premier)
+      batch = batch.sort((a, b) => b.id - a.id);
+      buffer = batch;
+      hideSpinner();
+      fetching = false;
+    }
+
+    // Initial load
+    async function initialLoad() {
+      await fetchNextBatch();
+      // display entire buffer reversed (oldest first)
+      buffer.slice().reverse().forEach(item => insertAtBottom(item));
+      buffer = [];
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // On scroll up, reveal 3 messages d'un coup ou fetch si buffer vide
+    container.addEventListener('scroll', async () => {
+      if (container.scrollTop <= 10) {
+        if (buffer.length === 0) {
+          await fetchNextBatch();
+        }
+        if (buffer.length > 0) {
+          // show 3 messages d'un coup:
+          const batch = buffer.splice(0, 3);
+          insertAtTopBatch(batch);
+        }
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', initialLoad);
+  </script>
+</body>
+</html>
