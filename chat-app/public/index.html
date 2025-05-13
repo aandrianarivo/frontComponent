@@ -1,30 +1,361 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Utilisateurs en ligne</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Messenger</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f0f2f5;
+    }
+
+    .container-fluid {
+      height: 100vh;
+      display: flex;
+    }
+
+    /* Barre latérale gauche (utilisateurs en ligne) */
+    .sidebar-left {
+      width: 300px;
+      background-color: white;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    .sidebar-left h5 {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #050505;
+    }
+
+    #onlineUsers {
+      list-style: none;
+      padding: 0;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    #onlineUsers li {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 5px;
+    }
+
+    #onlineUsers li:hover {
+      background-color: #e4e6eb;
+    }
+
+    #onlineUsers li.active {
+      background-color: #d3e3fd;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #ccc;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border: 2px solid white;
+    }
+
+    .status-online {
+      background-color: #00ff00;
+    }
+
+    .username {
+      color: #050505;
+      font-size: 14px;
+    }
+
+    /* Contenu principal (chat) */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+    }
+
+    .chat-header {
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #f0f2f5;
+    }
+
+    .chat-header h5 {
+      margin: 0;
+      font-size: 16px;
+      color: #050505;
+    }
+
+    .chat-header button {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+
+    #chatBox {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 60%;
+      padding: 8px 12px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .message-other {
+      background-color: #e4e6eb;
+      color: #050505;
+      align-self: flex-start;
+    }
+
+    .message-me {
+      background-color: #0084ff;
+      color: white;
+      align-self: flex-end;
+    }
+
+    .message-timestamp {
+      font-size: 12px;
+      color: #65676b;
+      margin-top: 2px;
+      text-align: right;
+    }
+
+    #messageForm {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: white;
+    }
+
+    #messageInput {
+      border-radius: 20px;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+    }
+
+    #messageForm button {
+      border-radius: 20px;
+      padding: 10px 20px;
+    }
+
+    /* Menu utilisateur */
+    .user-menu {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-menu .avatar {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    #currentUser {
+      color: #050505;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #logoutBtn {
+      margin-left: auto;
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+  </style>
 </head>
-<body class="p-4">
-  <h3>Utilisateurs en ligne</h3>
-  <ul id="userList" class="list-group"></ul>
-  <script src="/socket.io/socket.io.js"></script>
+
+<body>
+  <div class="container-fluid">
+    <!-- Barre latérale gauche (utilisateurs en ligne) -->
+    <div class="sidebar-left">
+      <h5>Messagerie</h5>
+      <ul id="onlineUsers">
+        <li id="globalChat" class="active">
+          <div class="avatar">G</div>
+          <span class="username">Salon Global</span>
+        </li>
+      </ul>
+      <!-- Menu utilisateur -->
+      <div class="user-menu">
+        <div class="avatar" id="userAvatar"></div>
+        <span id="currentUser"></span>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Déconnexion</button>
+      </div>
+    </div>
+    <!-- Contenu principal (chat) -->
+    <div class="main-content">
+      <div class="chat-header">
+        <h5 id="chatTitle">Salon Global</h5>
+        <button id="backToGlobal" class="btn btn-outline-secondary btn-sm d-none">Retour au Salon Global</button>
+      </div>
+      <div id="chatBox"></div>
+      <form id="messageForm" class="d-flex gap-2">
+        <input id="messageInput" type="text" class="form-control" placeholder="Écrivez un message..." required />
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     const socket = io();
     const user = localStorage.getItem('chatUser');
-    if (!user) window.location.href = '/login.html';
-    socket.emit('register', user);
-    socket.on('onlineUsers', users => {
-      const ul = document.getElementById('userList');
-      ul.innerHTML = '';
-      users.filter(u => u !== user).forEach(u => {
-        const li = document.createElement('li');
-        li.textContent = u;
-        li.className = 'list-group-item list-group-item-action';
-        li.onclick = () => window.location.href = `/chat.html`;
-        ul.append(li);
+
+    // Rediriger si l'utilisateur n'est pas connecté
+    if (!user || user.trim() === '') {
+      window.location.href = '/login.html';
+    } else {
+      let currentChat = 'global'; // 'global' ou nom d'utilisateur pour chat privé
+      let currentRecipient = null; // Utilisateur sélectionné pour chat privé
+
+      // Afficher le nom et l'avatar de l'utilisateur actuel
+      document.getElementById('currentUser').textContent = user;
+      document.getElementById('userAvatar').textContent = user ? user.charAt(0).toUpperCase() : '?';
+
+      // Enregistrer l'utilisateur auprès du serveur
+      socket.emit('register', user);
+
+      // Sélectionner une conversation
+      function selectChat(type, recipient = null) {
+        currentChat = type;
+        currentRecipient = recipient;
+        document.getElementById('chatTitle').textContent = type === 'global' ? 'Salon Global' : recipient;
+        document.getElementById('chatBox').innerHTML = ''; // Vider la conversation
+        document.getElementById('backToGlobal').classList.toggle('d-none', type === 'global');
+        // Mettre à jour la classe active
+        document.querySelectorAll('#onlineUsers li').forEach(li => li.classList.remove('active'));
+        if (type === 'global') {
+          document.getElementById('globalChat').classList.add('active');
+        } else {
+          document.querySelector(`#user-${recipient}`)?.classList.add('active');
+        }
+      }
+
+      // Afficher les messages
+      socket.on('message', (msg) => {
+        if (currentChat === 'global' && !msg.recipient) {
+          displayMessage(msg);
+        }
       });
-    });
+
+      socket.on('privateMessage', (msg) => {
+        if (
+          (msg.sender === user && msg.recipient === currentRecipient) ||
+          (msg.sender === currentRecipient && msg.recipient === user)
+        ) {
+          displayMessage(msg);
+        }
+      });
+
+      function displayMessage(msg) {
+        const chatBox = document.getElementById('chatBox');
+        const messageEl = document.createElement('div');
+        messageEl.className = `message ${msg.user === user ? 'message-me' : 'message-other'}`;
+        messageEl.textContent = msg.text;
+        const timestampEl = document.createElement('div');
+        timestampEl.className = 'message-timestamp';
+        timestampEl.textContent = new Date(msg.timestamp).toLocaleTimeString();
+        if (msg.user !== user) {
+          const usernameEl = document.createElement('div');
+          usernameEl.style.fontSize = '12px';
+          usernameEl.style.color = '#65676b';
+          usernameEl.textContent = msg.user || 'Anonyme';
+          chatBox.appendChild(usernameEl);
+        }
+        chatBox.appendChild(messageEl);
+        chatBox.appendChild(timestampEl);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      // Afficher les utilisateurs en ligne
+      socket.on('onlineUsers', (users) => {
+        const onlineUsers = document.getElementById('onlineUsers');
+        // Conserver l'entrée pour le salon global
+        onlineUsers.innerHTML = `
+          <li id="globalChat" class="${currentChat === 'global' ? 'active' : ''}">
+            <div class="avatar">G</div>
+            <span class="username">Salon Global</span>
+          </li>
+        `;
+        users.forEach((username) => {
+          if (!username || typeof username !== 'string' || username === user) return; // Ignorer les valeurs invalides et l'utilisateur actuel
+          const li = document.createElement('li');
+          li.id = `user-${username}`;
+          li.className = currentRecipient === username ? 'active' : '';
+          li.innerHTML = `
+            <div class="avatar">${username.charAt(0).toUpperCase()}</div>
+            <span class="username">${username}</span>
+            <span class="status-dot status-online"></span>
+          `;
+          li.onclick = () => selectChat('private', username);
+          onlineUsers.appendChild(li);
+        });
+      });
+
+      // Sélectionner le salon global
+      document.getElementById('globalChat').onclick = () => selectChat('global');
+      document.getElementById('backToGlobal').onclick = () => selectChat('global');
+
+      // Envoyer un message
+      document.getElementById('messageForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = document.getElementById('messageInput').value.trim();
+        if (text) {
+          if (currentChat === 'global') {
+            socket.emit('newMessage', text);
+          } else {
+            socket.emit('privateMessage', { recipient: currentRecipient, text });
+          }
+          document.getElementById('messageInput').value = '';
+        }
+      });
+
+      // Gérer la déconnexion
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('chatUser');
+        socket.disconnect();
+        window.location.href = '/login.html';
+      });
+    }
   </script>
 </body>
+
 </html>

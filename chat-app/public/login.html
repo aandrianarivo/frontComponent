@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Connexion</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
+
 <body class="d-flex align-items-center justify-content-center vh-100">
   <div class="card p-4" style="width: 300px;">
     <h5 class="card-title text-center mb-3">Entrez votre pseudo</h5>
@@ -13,24 +15,48 @@
       <input id="username" type="text" class="form-control mb-3" placeholder="Pseudo" required />
       <button type="submit" class="btn btn-primary w-100">Se connecter</button>
     </form>
+    <p class="text-center mt-3">
+      Pas de compte ? <a href="/register.html">S'inscrire</a>
+    </p>
   </div>
   <script>
-    document.getElementById('loginForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const user = document.getElementById('username').value.trim();
-    console.log('Login attempt:', user);
-    if (!user) {
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      console.log('Login attempt:', user);
+      if (!user) {
         alert('Veuillez saisir un pseudo.');
         return;
-    }
-    localStorage.setItem('chatUser', user);
-    // Ajouter un délai pour voir le console.log
-    setTimeout(() => {
-        window.location.href = '/index.html';
-    }, 1000); // Délai de 1 seconde
-    // Ou commenter la redirection pour tester :
-    // window.location.href = '/index.html';
+      }
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user }),
+        });
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers.get('content-type'));
+        const text = await response.text();
+        console.log('Response text:', text);
+        try {
+          const result = JSON.parse(text);
+          if (response.ok) {
+            localStorage.setItem('chatUser', user);
+            window.location.href = '/index.html';
+          } else {
+            alert(result.error || 'Utilisateur non trouvé.');
+          }
+        } catch (jsonError) {
+          console.error('JSON parse error:', jsonError);
+          alert('Réponse serveur invalide. Veuillez réessayer.');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        alert('Erreur serveur. Veuillez réessayer.');
+      }
     });
   </script>
 </body>
+
 </html>

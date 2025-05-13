@@ -246,5 +246,29 @@
     "timestamp": "2025-05-12T13:10:22.364Z",
     "receiver": "antonius",
     "room": "anthony|antonius"
+  },
+  {
+    "id": 1747066919429,
+    "user": "anthony",
+    "text": "salutation",
+    "timestamp": "2025-05-12T16:21:59.429Z"
+  },
+  {
+    "id": 1747068851422,
+    "user": "aly18",
+    "text": "Salut",
+    "timestamp": "2025-05-12T16:54:11.422Z"
+  },
+  {
+    "id": 1747068910745,
+    "user": "aly18",
+    "text": "s",
+    "timestamp": "2025-05-12T16:55:10.745Z"
+  },
+  {
+    "id": 1747069755768,
+    "user": "anthony",
+    "text": "hi",
+    "timestamp": "2025-05-12T17:09:15.768Z"
   }
 ]
