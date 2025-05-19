@@ -1,76 +1,95 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const { statements } = require('./database');
+
+const SALT_ROUNDS = 10; // Nombre de tours de hachage pour bcrypt
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const DATA_FILE = path.join(__dirname, 'messages.json');
-const USERS_FILE = path.join(__dirname, 'users.json');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-// Lecture/écriture du fichier JSON pour les messages
-function readMessages() {
-  try { return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')); }
-  catch { return []; }
-}
-function writeMessages(msgs) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(msgs, null, 2));
-}
 
-// Lecture/écriture du fichier JSON pour les utilisateurs
-function readUsers() {
-  try { return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); }
-  catch { return []; }
-}
-function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-}
 
 // Endpoint pour l'inscription
-app.post('/register', (req, res) => {
-  const { username } = req.body;
-  if (!username) {
-    return res.status(400).json({ error: 'Pseudo requis.' });
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Pseudo et mot de passe requis.' });
   }
 
-  const users = readUsers();
-  if (users.some(user => user.username === username)) {
+  // Vérifier si l'utilisateur existe déjà
+  const existingUser = statements.findUserByUsername.get(username);
+  if (existingUser) {
     return res.status(400).json({ error: 'Ce pseudo est déjà pris.' });
   }
 
-  users.push({ username });
-  writeUsers(users);
-  res.status(201).json({ message: 'Inscription réussie.' });
+  try {
+    // Hachage du mot de passe avec bcrypt
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    
+    // Insertion dans la base de données
+    statements.insertUser.run(username, hashedPassword);
+    res.status(201).json({ message: 'Inscription réussie.' });
+  } catch (error) {
+    console.error('Erreur lors de l\'inscription:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'inscription.' });
+  }
 });
 
 // Endpoint pour la connexion
-app.post('/login', (req, res) => {
-  const { username } = req.body;
-  if (!username) {
-    return res.status(400).json({ error: 'Pseudo requis.' });
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Pseudo et mot de passe requis.' });
   }
-  console.log(username);
-  const users = readUsers();
-  if (!users.some(user => user.username === username)) {
+  
+  // Recherche de l'utilisateur dans la base de données
+  const user = statements.findUserByUsername.get(username);
+  console.log('Tentative de connexion:', user);
+  
+  if (!user) {
     return res.status(404).json({ error: 'Utilisateur non trouvé.' });
   }
-  res.status(200).json({ message: 'Connexion réussie.' });
+  
+  try {
+    // Vérification du mot de passe avec bcrypt
+    const passwordMatch = await bcrypt.compare(password, user.user_password);
+    
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Mot de passe incorrect.' });
+    }
+    
+    res.status(200).json({ message: 'Connexion réussie.' });
+  } catch (error) {
+    console.error('Erreur lors de la vérification du mot de passe:', error);
+    res.status(500).json({ error: 'Erreur lors de la connexion.' });
+  }
 });
 
 // Endpoint REST pour paginer les messages
 app.get('/messages', (req, res) => {
   const offset = parseInt(req.query.offset) || 0;
   const limit = parseInt(req.query.limit) || 20;
-  const all = readMessages();
-  all.sort((a, b) => a.id - b.id);
-  const start = Math.max(all.length - offset - limit, 0);
-  const end = all.length - offset;
-  res.json({ messages: all.slice(start, end) });
+  
+  // Récupérer les messages depuis la base de données
+  const messages = statements.getMessages.all(limit, offset);
+  const countResult = statements.getMessagesCount.get();
+  const totalCount = countResult ? countResult.count : 0;
+  
+  res.json({ 
+    messages, 
+    pagination: {
+      offset,
+      limit,
+      total: totalCount
+    }
+  });
 });
 
 // Socket.io pour le chat en temps réel
@@ -87,14 +106,15 @@ io.on('connection', (socket) => {
 
   socket.on('newMessage', (text) => {
     const msg = {
-      id: Date.now(),
       user: socket.user,
       text,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
-    const all = readMessages();
-    all.push(msg);
-    writeMessages(all);
+    
+    // Insertion du message dans la base de données
+    const info = statements.insertMessage.run(socket.user, text);
+    msg.id = info.lastInsertRowid;
+    
     io.to('global').emit('message', msg);
   });
 

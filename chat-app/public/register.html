@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inscription</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <style>
+    .toast-success { background: linear-gradient(to right, #00b09b, #96c93d); }
+    .toast-error { background: linear-gradient(to right, #ff5f6d, #ffc371); }
+  </style>
 </head>
 
 <body class="d-flex align-items-center justify-content-center vh-100">
@@ -13,6 +19,7 @@
     <h5 class="card-title text-center mb-3">Créez votre compte</h5>
     <form id="registerForm">
       <input id="username" type="text" class="form-control mb-3" placeholder="Pseudo" required />
+      <input id="password" type="password" class="form-control mb-3" placeholder="Mot de passe" required />
       <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
     </form>
     <p class="text-center mt-3">
@@ -23,8 +30,9 @@
     document.getElementById('registerForm').addEventListener('submit', async e => {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
-      if (!user) {
-        alert('Veuillez saisir un pseudo.');
+      const pass = document.getElementById('password').value.trim();
+      if (!user || !pass) {
+        showToast('Veuillez saisir un pseudo et un mot de passe.', 'error');
         return;
       }
 
@@ -32,19 +40,33 @@
         const response = await fetch('/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: user }),
+          body: JSON.stringify({ username: user, password: pass }),
         });
         const result = await response.json();
         if (response.ok) {
-          alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
-          window.location.href = '/login.html';
+          showToast('Inscription réussie ! Vous pouvez maintenant vous connecter.', 'success');
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 2000); // Redirection après 2 secondes pour voir le toast
         } else {
-          alert(result.error || 'Erreur lors de l\'inscription.');
+          showToast(result.error || 'Erreur lors de l\'inscription.', 'error');
         }
       } catch (error) {
-        alert('Erreur serveur. Veuillez réessayer.');
+        showToast('Erreur serveur. Veuillez réessayer.', 'error');
       }
     });
+  // Fonction pour afficher les toast messages
+  function showToast(message, type = 'info') {
+    const className = type === 'error' ? 'toast-error' : 'toast-success';
+    Toastify({
+      text: message,
+      duration: 3000,
+      close: true,
+      gravity: "top", 
+      position: "right",
+      className: className,
+    }).showToast();
+  }
   </script>
 </body>
 
