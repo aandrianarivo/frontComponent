@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exemple de bouton fixe</title>
+  <!-- Lien vers Font Awesome pour l’icône -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    body {
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-color: #eef2f5;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .btn-fixed-size {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-fixed-size:hover {
+      background-color: #e2e6ea;
+      box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn-fixed-size" title="Filtrer">
+    <i class="fa-solid fa-filter" style="color: #343a40;"></i>
+  </button>
+
+</body>
+</html>

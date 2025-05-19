@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Leaflet Cluster – Popup au hover et clic possible</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+    #zoomCluster {
+      background: #3388ff;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script>
+    const map = L.map('map').setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // ① Groupe de clusters sans zoom auto au clic
+    const markers = L.markerClusterGroup({
+      zoomToBoundsOnClick: true
+    });
+
+    // ② Quelques points d'exemple
+    const data = [
+      [48.8566, 2.3522],
+      [51.5074, -0.1278],
+      [40.7128, -74.0060],
+      [34.0522, -118.2437],
+      [35.6895, 139.6917],
+      [55.7558, 37.6173],
+      [28.6139, 77.2090]
+    ];
+
+    data.forEach(coords => {
+      markers.addLayer(L.marker(coords));
+    });
+
+    map.addLayer(markers);
+
+    // ③ On crée un popup à chaque survol
+    markers.on('clustermouseover', function(e) {
+      const cluster = e.layer;
+      const bounds  = cluster.getBounds();
+      const pos     = e.latlng;
+
+      // Popup avec options par défaut (fermeture au clic carte)
+      L.popup({
+        closeButton: false,
+        autoClose: true,
+        closeOnClick: true
+      })
+      .setLatLng(pos)
+      .setContent('<button id="zoomCluster">Voir les points</button>')
+      .openOn(map);
+
+      // On peut cliquer sur le bouton sans que le popup ne disparaisse avant
+      document.getElementById('zoomCluster').addEventListener('click', () => {
+        map.fitBounds(bounds);
+        map.closePopup();
+      });
+    });
+
+    // → Plus de clustermouseout ! Le popup reste en place, et se fermera
+    //   soit quand vous cliquerez sur la carte, soit automatiquement
+    //   après avoir zoomé (via map.closePopup()).
+  </script>
+</body>
+</html>

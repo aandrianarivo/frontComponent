@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Popup Persistante sur Marker</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html, body, #map {
+      width: 100%; height: 100%; margin: 0; padding: 0;
+    }
+    .btn-popup {
+      display: inline-block;
+      margin-top: .5em;
+      padding: .25em .5em;
+      font-size: .9rem;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: .25rem;
+      cursor: pointer;
+    }
+    .btn-popup:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // 1) Initialisation de la carte
+    const map = L.map('map').setView([48.8566, 2.3522], 13); // Paris
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 2) Création du marker
+    const marker = L.marker([48.8566, 2.3522]).addTo(map);
+
+    // 3) Contenu de la popup
+    const popupHtml = `
+      <h4>Point d'intérêt</h4>
+      <p>Voici un marker avec popup persistante.</p>
+      <button class="btn-popup">Clique-moi</button>
+    `;
+
+    // 4) BindPopup sans fermeture auto
+    marker.bindPopup(popupHtml, {
+      autoClose: false,
+      closeOnClick: false
+    });
+
+    // 5) Gestion du timer de fermeture
+    let closeTimer;
+
+    // Ouvre la popup au survol
+    marker.on('mouseover', () => {
+      clearTimeout(closeTimer);
+      marker.openPopup();
+    });
+
+    // Démarre le timer quand on quitte le marker
+    marker.on('mouseout', () => {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => {
+        marker.closePopup();
+      }, 300);
+    });
+
+    // 6) Quand la popup s’ouvre, on gère l’entrée/sortie et le bouton
+    map.on('popupopen', e => {
+      const popup = e.popup;
+      const el    = popup.getElement();
+
+      // Si on entre dans la popup, on annule la fermeture
+      el.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimer);
+      });
+
+      // Si on sort de la popup, on ferme de suite
+      el.addEventListener('mouseleave', () => {
+        marker.closePopup();
+      });
+
+      // Bouton cliquable
+      const btn = el.querySelector('.btn-popup');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          alert('Bouton du marker cliqué !');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

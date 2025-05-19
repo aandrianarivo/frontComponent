@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Badges Hover Bordure</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <style>
+    /* Transition douce */
+    .badge {
+      transition: 
+        background-color .2s, 
+        color .2s, 
+        border-color .2s;
+      cursor: pointer; /* indique que c'est cliquable */
+    }
+
+    /* Au survol, on rend le fond transparent */
+    .badge:hover {
+      background-color: transparent !important;
+    }
+
+    /* Pour chaque couleur, on remet une bordure + la même couleur pour le texte */
+    .badge.bg-danger:hover   { border: 1px solid var(--bs-danger)   !important; color: var(--bs-danger)   !important; }
+    .badge.bg-success:hover  { border: 1px solid var(--bs-success)  !important; color: var(--bs-success)  !important; }
+    .badge.bg-warning:hover  { border: 1px solid var(--bs-warning)  !important; color: var(--bs-warning)  !important; }
+    .badge.bg-info:hover     { border: 1px solid var(--bs-info)     !important; color: var(--bs-info)     !important; }
+    .badge.bg-primary:hover  { border: 1px solid var(--bs-primary)  !important; color: var(--bs-primary)  !important; }
+    .badge.bg-secondary:hover{ border: 1px solid var(--bs-secondary)!important; color: var(--bs-secondary)!important; }
+    .badge.bg-light:hover    { border: 1px solid var(--bs-light)    !important; color: var(--bs-dark)     !important; }
+    .badge.bg-dark:hover     { border: 1px solid var(--bs-dark)     !important; color: var(--bs-dark)     !important; }
+  </style>
+</head>
+<body class="bg-light py-5">
+
+  <div class="container text-center">
+    <h2>Badges Bootstrap avec bordure au hover</h2>
+    <div class="mt-4">
+      <span class="badge bg-danger mx-2">Danger</span>
+      <span class="badge bg-success mx-2">Success</span>
+      <span class="badge bg-warning text-dark mx-2">Warning</span>
+      <span class="badge bg-info text-dark mx-2">Info</span>
+      <span class="badge bg-primary mx-2">Primary</span>
+      <span class="badge bg-secondary mx-2">Secondary</span>
+      <span class="badge bg-light text-dark mx-2">Light</span>
+      <span class="badge bg-dark mx-2">Dark</span>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle (optionnel) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
