@@ -255,11 +255,12 @@
       socket.emit('register', user);
 
       // Sélectionner une conversation
-      function selectChat(type, recipient = null) {
+      async function selectChat(type, recipient = null) {
         currentChat = type;
         currentRecipient = recipient;
         document.getElementById('chatTitle').textContent = type === 'global' ? 'Salon Global' : recipient;
-        document.getElementById('chatBox').innerHTML = ''; // Vider la conversation
+        await getMessage();
+        // document.getElementById('chatBox').innerHTML = old_messages; // Vider la conversation
         document.getElementById('backToGlobal').classList.toggle('d-none', type === 'global');
         // Mettre à jour la classe active
         document.querySelectorAll('#onlineUsers li').forEach(li => li.classList.remove('active'));
@@ -276,6 +277,14 @@
           displayMessage(msg);
         }
       });
+      async function getMessage (){
+        const response = await fetch('/messages');
+        const data = await response.json();
+        console.log(data.messages);
+        data.messages.forEach(msg => {
+          displayMessage(msg);
+        });
+      }
 
       socket.on('privateMessage', (msg) => {
         if (

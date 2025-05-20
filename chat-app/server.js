@@ -102,6 +102,7 @@ io.on('connection', (socket) => {
       .filter(s => s.rooms.has('global') && s.user)
       .map(s => s.user);
     io.to('global').emit('onlineUsers', users);
+    console.log('Utilisateurs connectés:', users);
   });
 
   socket.on('newMessage', (text) => {
@@ -116,6 +117,32 @@ io.on('connection', (socket) => {
     msg.id = info.lastInsertRowid;
     
     io.to('global').emit('message', msg);
+  });
+  
+  // Gestionnaire pour les messages privés
+  socket.on('privateMessage', (data) => {
+    if (!socket.user || !data.recipient || !data.text) {
+      return;
+    }
+    
+    const msg = {
+      sender: socket.user,
+      recipient: data.recipient,
+      text: data.text,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Trouver le socket du destinataire
+    const recipientSocket = Array.from(io.sockets.sockets.values())
+      .find(s => s.user === data.recipient);
+    
+    // Envoyer le message au destinataire et à l'expéditeur
+    if (recipientSocket) {
+      recipientSocket.emit('privateMessage', msg);
+    }
+    socket.emit('privateMessage', msg);
+    
+    console.log(`Message privé de ${socket.user} à ${data.recipient}: ${data.text}`);
   });
 
   socket.on('disconnect', () => {
