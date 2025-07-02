@@ -2,6 +2,7 @@
 const express = require('express');
 const { sequelize } = require('./models');
 const bcrypt = require('bcrypt');
+const { getOrCreateConversation, sendMessage, getMessages } = require('./services/chat-service');
 const app = express();
 const port = 4000;
 
@@ -46,6 +47,21 @@ app.post('/users', async (req, res) => {
   } catch (err) {
     console.error('Erreur lors de l\'ajout de l\'utilisateur:', err.stack);
     res.status(500).json({ success: false, error: 'Erreur lors de l\'ajout de l\'utilisateur' });
+  }
+});
+
+app.get('/test/conv', async (req, res) => {
+  try {
+    console.log('Test de la conversation');
+    let convId = getOrCreateConversation(1, 2);
+    console.log(convId);
+    sendMessage(convId, 1, 'Salut John !');
+    sendMessage(convId, 2, 'Salut Antonius, ça va ?');
+    let messages = getMessages(convId);
+    return res.json({ success: true, data: messages });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des messages:', error.stack);
+    res.status(500).json({ success: false, error: 'Erreur lors de la récupération des messages' });
   }
 });
 

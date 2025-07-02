@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CMZ Drive - Choisir une offre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      padding: 30px;
+    }
+    .pricing-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+      transition: transform 0.3s;
+    }
+    .pricing-card:hover {
+      transform: translateY(-5px);
+    }
+    .btn-pill {
+      border-radius: 50px;
+    }
+    .badge-plan {
+      font-size: 0.75rem;
+      background-color: #6c757d;
+      color: #fff;
+      border-radius: 20px;
+      padding: 0.25em 0.6em;
+    }
+    .pricing-features {
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+    }
+    .text-success-icon { color: #198754; }
+    .text-danger-icon { color: #dc3545; }
+    .text-muted-icon { color: #6c757d; }
+  </style>
+</head>
+<body>
+  <div class="container text-center">
+    <div class="text-start mb-4">
+      <a href="main.html" class="btn btn-outline-secondary btn-pill">
+        <i data-lucide="arrow-left" class="text-muted-icon"></i> Retour au tableau de bord
+      </a>
+    </div>
+
+    <h2 class="fw-bold mb-4"><i data-lucide="scroll-text" class="text-muted-icon"></i> Choisissez une offre</h2>
+    <div class="row g-4">
+
+      <!-- Offre gratuite -->
+      <div class="col-md-4">
+        <div class="card pricing-card p-4">
+          <h5 class="text-muted">Offre gratuite</h5>
+          <h3 class="fw-bold">0€ / an</h3>
+          <p>20 Go de stockage</p>
+          <div class="pricing-features">
+            <ul class="list-unstyled">
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Sauvegarde manuelle</li>
+              <li><i data-lucide="x-circle" class="text-danger-icon"></i> Synchro multi-drive</li>
+              <li><i data-lucide="x-circle" class="text-danger-icon"></i> Assistance prioritaire</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline-secondary btn-pill mt-3" disabled>Offre actuelle</button>
+        </div>
+      </div>
+
+      <!-- Offre Standard (100-900 Go) -->
+      <div class="col-md-4">
+        <div class="card pricing-card p-4 border-primary">
+          <span class="badge-plan mb-2">Flexibilité</span>
+          <h5 class="text-primary">CMZ Standard</h5>
+          <h3 class="fw-bold text-primary">1€ / 100 Go</h3>
+          <p>De 100 à 900 Go</p>
+          <div class="pricing-features">
+            <ul class="list-unstyled">
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Sauvegarde automatique</li>
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Synchro Dropbox / GDrive</li>
+              <li><i data-lucide="x-circle" class="text-danger-icon"></i> Assistance prioritaire</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary btn-pill mt-3">Choisir</button>
+        </div>
+      </div>
+
+      <!-- Offre Premium (1 To+) -->
+      <div class="col-md-4">
+        <div class="card pricing-card p-4 border-warning">
+          <h5 class="text-warning">CMZ Premium</h5>
+          <h3 class="fw-bold text-warning">8€ / an</h3>
+          <p>1 To de stockage</p>
+          <div class="pricing-features">
+            <ul class="list-unstyled">
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Sauvegarde automatique</li>
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Synchro avancée illimitée</li>
+              <li><i data-lucide="check-circle" class="text-success-icon"></i> Assistance prioritaire 24h/24</li>
+            </ul>
+          </div>
+          <button class="btn btn-warning btn-pill mt-3">Choisir</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes Abonnements - CMZ Drive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 30px;
+    }
+    .section-title {
+      margin-bottom: 30px;
+    }
+    .card-modern {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+    }
+    .badge-status {
+      font-size: 0.85rem;
+    }
+    .btn-pill {
+      border-radius: 50px;
+    }
+    .text-primary-icon { color: #0d6efd; }
+    .text-warning-icon { color: #ffc107; }
+    .text-success-icon { color: #198754; }
+    .text-danger-icon { color: #dc3545; }
+    .text-muted-icon { color: #6c757d; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold"><i data-lucide="scroll-text" class="text-primary-icon"></i> Mes abonnements</h2>
+      <a href="main.html" class="btn btn-outline-secondary btn-pill">
+        <i data-lucide="arrow-left" class="text-muted-icon"></i> Retour au tableau de bord
+      </a>
+    </div>
+
+    <div class="card card-modern mb-4">
+      <h5 class="mb-3"><i data-lucide="history" class="text-muted-icon"></i> Historique des abonnements</h5>
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Offre</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>01/07/2025</td>
+            <td>CMZ Premium 200 Go</td>
+            <td>2 €</td>
+            <td><span class="badge bg-success badge-status">Actif</span></td>
+            <td><button class="btn btn-sm btn-outline-primary"><i data-lucide="file-text" class="text-primary-icon"></i> Facture</button></td>
+          </tr>
+          <tr>
+            <td>15/06/2025</td>
+            <td>Drive Externe (Essai)</td>
+            <td>0 €</td>
+            <td><span class="badge bg-warning text-dark badge-status">En cours</span></td>
+            <td><button class="btn btn-sm btn-outline-danger"><i data-lucide="x-circle" class="text-danger-icon"></i> Annuler</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-info">
+      <i data-lucide="help-circle" class="text-primary-icon me-2"></i>
+      Besoin de modifier ou de gérer vos abonnements ? Veuillez contacter le support ou accéder à votre compte Stripe sécurisé.
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Cloud CMZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      padding: 30px;
+    }
+    .file-row i {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .file-badge {
+      font-size: 0.75rem;
+      padding: 0.3em 0.6em;
+    }
+    .section-title {
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card-modern {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    .progress-custom {
+      height: 8px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-custom {
+      background: linear-gradient(90deg, #0d6efd, #6610f2);
+    }
+    .btn-pill {
+      border-radius: 50px;
+    }
+    .text-primary-icon { color: #0d6efd; }
+    .text-warning-icon { color: #ffc107; }
+    .text-success-icon { color: #198754; }
+    .text-muted-icon { color: #6c757d; }
+    .text-danger-icon { color: #dc3545; }
+    .text-info-icon { color: #0dcaf0; }
+    .text-dark-icon { color: #343a40; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold"><i data-lucide="package" class="text-muted-icon"></i> Cloud CMZ</h2>
+      <a href="abonnements.html" class="btn btn-outline-dark btn-pill">
+        <i data-lucide="receipt-text" class="text-muted-icon"></i> Voir mes abonnements
+      </a>
+    </div>
+
+    <!-- Grid modernisée pour espace de stockage -->
+    <div class="dashboard-grid">
+      <div class="card card-modern p-4">
+        <h5 class="text-muted"><i data-lucide="folder" class="text-info-icon"></i> Utilisation</h5>
+        <h4 class="fw-bold">17 Go / 20 Go</h4>
+        <div class="progress-custom mt-2">
+          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 85%"></div>
+        </div>
+        <small class="text-muted mt-2 d-block">85% utilisé</small>
+      </div>
+
+      <div class="card card-modern p-4">
+        <h5 class="text-muted"><i data-lucide="tag" class="text-warning-icon"></i> Offre active</h5>
+        <h4 class="fw-bold">CMZ Gratuit</h4>
+        <a href="upgrade.html" class="btn btn-primary mt-3 btn-pill"><i data-lucide="refresh-cw" class="text-light"></i> Passer à une offre supérieure</a>
+      </div>
+
+      <div class="card card-modern p-4">
+        <h5 class="text-muted"><i data-lucide="bar-chart" class="text-success-icon"></i> Détails de l’espace utilisé</h5>
+        <p class="mb-2">    
+          Visualisez la répartition de vos fichiers par type (documents, images, vidéos…). 
+          Supprimez les éléments volumineux ou inutiles pour libérer rapidement de l’espace.</p>
+        <a href="details.html" class="btn btn-outline-success btn-sm btn-pill">Voir les détails</a>
+      </div>
+    </div>
+
+    <!-- Section fichiers -->
+    <h4 class="section-title"><i data-lucide="file" class="text-dark-icon"></i> Mes fichiers</h4>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <input type="file" id="file-upload" style="display: none;">
+        <label for="file-upload" class="btn btn-primary btn-pill">
+          <i data-lucide="upload" class="text-light"></i> Ajouter un fichier
+        </label>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle btn-pill" type="button" data-bs-toggle="dropdown">
+          Activer la synchronisation
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <div class="form-check mx-3">
+              <input class="form-check-input" type="checkbox" id="dropbox-sync">
+              <label class="form-check-label" for="dropbox-sync">
+                <i data-lucide="box" class="text-info-icon"></i> Dropbox
+              </label>
+            </div>
+          </li>
+          <li>
+            <div class="form-check mx-3">
+              <input class="form-check-input" type="checkbox" id="gdrive-sync">
+              <label class="form-check-label" for="gdrive-sync">
+                <i data-lucide="cloud" class="text-primary-icon"></i> Google Drive
+              </label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card card-modern mb-5">
+      <div class="card-body">
+        <h5 class="card-title">Liste de vos fichiers</h5>
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Nom</th>
+              <th>Type</th>
+              <th>Taille</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="file-row">
+              <td><span class="badge bg-info file-badge">Dropbox</span> contrat.pdf</td>
+              <td>PDF</td>
+              <td>120 Ko</td>
+              <td>01/07/2025</td>
+              <td>
+                <i data-lucide="download" class="text-primary-icon" title="Télécharger"></i>
+                <i data-lucide="edit-3" class="text-warning-icon" title="Renommer"></i>
+                <i data-lucide="share-2" class="text-success-icon" title="Partager"></i>
+                <i data-lucide="trash-2" class="text-danger-icon" title="Supprimer"></i>
+              </td>
+            </tr>
+            <tr class="file-row">
+              <td>photo.png</td>
+              <td>Image</td>
+              <td>850 Ko</td>
+              <td>25/06/2025</td>
+              <td>
+                <i data-lucide="download" class="text-primary-icon" title="Télécharger"></i>
+                <i data-lucide="edit-3" class="text-warning-icon" title="Renommer"></i>
+                <i data-lucide="share-2" class="text-success-icon" title="Partager"></i>
+                <i data-lucide="trash-2" class="text-danger-icon" title="Supprimer"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
